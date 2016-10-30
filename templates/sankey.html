@@ -5,27 +5,21 @@
   <title></title>
 	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="../js/websocket_helper.js"></script>
   <script src="../js/sankey.js"></script>
 </head>
 <body>
   <div id="sankey_basic" style="width: 900px; height: 300px;"></div>
   <p>Sankey Diagram Demo</p>
   <script> 
-    var socket = new io.connect('http://localhost:8000/');
-		// Add a connect listener
-		socket.on('connect',function() {
-			console.log('Client has connected to the server!');
-      socket.emit("message", {"message": "Hi there"});
-		});
-		// Add a connect listener
-		socket.on('message',function(data) {
-      data = JSON.parse(data);
+    var ws = WebsocketHelper("http://localhost:8000/", [function(data) {
 			console.log('Received a message from the server!', data.message);
-		});
-		// Add a disconnect listener
-		socket.on('disconnect',function() {
+    }], [function() {
+			console.log('Client has connected to the server!');
+      ws.sendMessage({"message": "Hi there"});
+    }], [function() {
 			console.log('The client has disconnected!');
-		});
+    }]);
     var data = [
       [ '192.92.181.60', '75.104.12.129', 5 ],
       [ '2.235.43.208', '239.85.84.11', 7 ],
