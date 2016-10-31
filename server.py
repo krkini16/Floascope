@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/")
 def hello():
     """
-    The default rout will serve sankey.html.
+    The default route will serve sankey.html.
     """
     return render_template("sankey.html")
 
