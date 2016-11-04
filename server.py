@@ -3,14 +3,23 @@ from flask import render_template
 from libs.socket_helper import create_socket_server, send_message
 
 PORT = 8000
-app = Flask(__name__)
+app = Flask(__name__)   
+app.debug = True
 
 @app.route("/")
-def hello():
+def sankey():
     """
     The default route will serve sankey.html.
     """
     return render_template("sankey.html")
+
+@app.route("/ts")
+def timeseries():
+    """
+    The default route will serve sankey.html.
+    """
+    return render_template("timeseries.html")
+
 
 @app.route("/<path:path>")
 def static_proxy(path):
