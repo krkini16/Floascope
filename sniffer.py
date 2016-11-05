@@ -28,7 +28,7 @@ class Sniffer:
 
         source_ip = packet[0][IP].src
         dest_pid = "TBD"
-        if src in self.sources.keys():
+        if "src" in self.sources.keys():
             self.sources[source_ip][num_packets] += 1
         else:
             self.sources[source_ip] = {"time_stamp" : self.start_time,
