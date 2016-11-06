@@ -42,7 +42,6 @@ def test_connect():
     global thread
     if thread is None:
         thread = socketio.start_background_task(target=lambda: Sniffer(socketio).run())
-    emit('custom_message', {'message': 'Connected'})
 
 @socketio.on('disconnect', namespace='/')
 def test_disconnect():

@@ -44,7 +44,6 @@
     });
 
     socket.on("custom_message", function(data) {
-      console.log(data);
       notify(messageHandlers, data);
     });
 
