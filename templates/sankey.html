@@ -19,7 +19,7 @@
       var ws = WebsocketHelper("http://localhost:8000/", [function(data) {
         var rows = Object.keys(data).map(function(key) {
           var obj = data[key];
-          return [key, "computer", obj.num_packets];
+          return [key, "" + obj.dest_port, obj.num_packets];
         });
         sankey.resetData(rows);
       }], [function() {

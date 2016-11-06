@@ -40,5 +40,6 @@ class Sniffer:
         else:
             self.sources[source_ip] = {"time_stamp" : self.start_time,
                                         "dest_pid"  : dest_pid,
+                                        "dest_port" : packet[0][IP].dport,
                                         "num_packets": 1,
                                         "interval" : self.interval}
