@@ -2,14 +2,11 @@ from scapy.all import *
 import time
 from libs.socket_helper import send_message
 
-def send_message(msg):
-    print msg
-
 class Sniffer:
     def __init__(self, interval=1000):
         self.sources = {}
         self.interval = interval
-        self.start_time = None
+        self.start_time = None      
 
     def run(self):
         print self.start_time
@@ -26,14 +23,16 @@ class Sniffer:
             send_message(self.sources)
             self.sources = {}
 
-        source_ip = packet[0][IP].src
-        dest_pid = "TBD"
-        if src in self.sources.keys():
-            self.sources[source_ip][num_packets] += 1
-        else:
-            self.sources[source_ip] = {"time_stamp" : self.start_time,
-                                        "dest_pid"  : dest_pid,
-                                        "num_packets": 1,
-                                        "interval" : self.interval}
-s = Sniffer()
-s.run()
+        try:
+            source_ip = packet[0][IP].src
+            dest_pid = "TBD"
+            if 'src' in self.sources.keys():
+                self.sources[source_ip][num_packets] += 1
+            else:
+                self.sources[source_ip] = {"time_stamp" : self.start_time,
+                                            "dest_pid"  : dest_pid,
+                                            "num_packets": 1,
+                                            "interval" : self.interval}
+        except:
+            pass
+            #print("not IP packet?")
