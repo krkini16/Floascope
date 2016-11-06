@@ -6,15 +6,6 @@ from sniffer import Sniffer
 import signal
 import sys
 
-
-def signal_handler(signal, frame):
-        print('You pressed Ctrl+C!')
-        sys.exit(0)
-signal.signal(signal.SIGINT, signal_handler)
-print('Press Ctrl+C')
-signal.pause()
-
-
 PORT = 8000
 app = Flask(__name__)
 app.debug = True
