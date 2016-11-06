@@ -1,9 +1,11 @@
 from flask import Flask
 from flask import render_template
 from libs.socket_helper import create_socket_server, send_message
+from threading import Thread
+from sniffer import Sniffer
 
 PORT = 8000
-app = Flask(__name__)   
+app = Flask(__name__)
 app.debug = True
 
 @app.route("/")
@@ -33,4 +35,5 @@ if __name__ == "__main__":
         print("Just got message " + str(message))
         send_message({"message": "Welcome to the app!"})
 
+    Thread(target=lambda: Sniffer().run()).start()
     create_socket_server(app, PORT, message_handlers=[dummy_message_handler])

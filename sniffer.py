@@ -2,9 +2,6 @@ from scapy.all import *
 import time
 from libs.socket_helper import send_message
 
-def send_message(msg):
-    print msg
-
 class Sniffer:
     def __init__(self, interval=1000):
         self.sources = {}
@@ -26,6 +23,8 @@ class Sniffer:
             send_message(self.sources)
             self.sources = {}
 
+        if IP not in packet[0]:
+            return
         source_ip = packet[0][IP].src
         dest_pid = "TBD"
         if "src" in self.sources.keys():
@@ -35,5 +34,3 @@ class Sniffer:
                                         "dest_pid"  : dest_pid,
                                         "num_packets": 1,
                                         "interval" : self.interval}
-s = Sniffer()
-s.run()
