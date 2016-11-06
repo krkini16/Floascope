@@ -8,19 +8,17 @@ class Sniffer:
         self.interval = interval
         self.start_time = None
         self.enabled = True
-        
+
     def stop(self):
         self.enabled = False
-        
-    def _is_enabled(self, packet):
-        return self.enabled
-    
+
     def run(self):
         print self.start_time
-        
+
         #Reset enabled flag
         self.enabled = True
-        sniff(prn=self._process_packet, filter='tcp', stop_filter=self._is_enabled)
+        is_enabled = lambda x: self.enabled
+        sniff(prn=self._process_packet, filter='tcp', stop_filter=is_enabled)
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
