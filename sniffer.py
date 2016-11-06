@@ -12,7 +12,7 @@ class Sniffer:
     def stop(self):
         self.enabled = False
         
-    def _is_enabled(self):
+    def _is_enabled(self, packet):
         return self.enabled
     
     def run(self):
@@ -20,7 +20,7 @@ class Sniffer:
         
         #Reset enabled flag
         self.enabled = True
-        sniff(prn=self._process_packet, filter='tcp', stop_filter=self._is_enabled())
+        sniff(prn=self._process_packet, filter='tcp', stop_filter=self._is_enabled)
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
