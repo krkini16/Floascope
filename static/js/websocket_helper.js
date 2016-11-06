@@ -44,7 +44,8 @@
     });
 
     socket.on("custom_message", function(data) {
-      notify(messageHandlers, JSON.parse(data));
+      console.log(data);
+      notify(messageHandlers, data);
     });
 
     socket.on("disconnect", function() {

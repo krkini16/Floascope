@@ -1,14 +1,18 @@
 from flask import Flask
+import eventlet
+eventlet.monkey_patch()
 from flask import render_template
-from libs.socket_helper import create_socket_server, send_message
-from threading import Thread
 from sniffer import Sniffer
-import signal
-import sys
+
+from flask_socketio import SocketIO, emit
+
 
 PORT = 8000
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'kmh_floascope'
+socketio = SocketIO(app, async_mode="eventlet")
 app.debug = True
+thread = None
 
 @app.route("/")
 def sankey():
@@ -32,16 +36,21 @@ def static_proxy(path):
     """
     return app.send_static_file(path)
 
-if __name__ == "__main__":
-    def dummy_message_handler(message):
-        print("Just got message " + str(message))
-        send_message({"message": "Welcome to the app!"})
-    
-    present_sniffer = Sniffer()
-    
-    def on_close(signal, frame):
-        present_sniffer.stop()
+@socketio.on('connect', namespace='/')
+def test_connect():
+    print("Got a connection")
+    global thread
+    if thread is None:
+        thread = socketio.start_background_task(target=lambda: Sniffer(socketio).run())
+    emit('custom_message', {'message': 'Connected'})
 
-    Thread(target=lambda: present_sniffer.run()).start()
-    signal.signal(signal.SIGINT, on_close)
-    create_socket_server(app, PORT, message_handlers=[dummy_message_handler])
+@socketio.on('disconnect', namespace='/')
+def test_disconnect():
+    print('Client disconnected')
+
+@socketio.on('custom_message')
+def handle_my_custom_event(json):
+    print('received json: ' + str(json))
+
+if __name__ == "__main__":
+    socketio.run(app, port=PORT)

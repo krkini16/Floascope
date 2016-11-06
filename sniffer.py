@@ -1,9 +1,9 @@
 from scapy.all import *
 import time
-from libs.socket_helper import send_message
 
 class Sniffer:
-    def __init__(self, interval=1000):
+    def __init__(self, socketio, interval=1000):
+        self.socketio = socketio
         self.sources = {}
         self.interval = interval
         self.start_time = None
@@ -14,10 +14,11 @@ class Sniffer:
 
     def run(self):
         print self.start_time
+        print("running sniffer")
 
         #Reset enabled flag
         self.enabled = True
-        sniff(prn=self._process_packet, filter='tcp', stop_filter=lambda p: not self.enabled)
+        sniff(prn=self._process_packet, filter='tcp')
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
@@ -27,7 +28,7 @@ class Sniffer:
         #Note: this is being sent purely based off of interval. No persistant memory.
         if current_time - self.start_time > self.interval:
             self.start_time = current_time
-            send_message(self.sources)
+            self.socketio.emit("custom_message", self.sources)
             self.sources = {}
 
         if IP not in packet[0]:
