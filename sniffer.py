@@ -17,8 +17,7 @@ class Sniffer:
 
         #Reset enabled flag
         self.enabled = True
-        is_enabled = lambda x: self.enabled
-        sniff(prn=self._process_packet, filter='tcp', stop_filter=is_enabled)
+        sniff(prn=self._process_packet, filter='tcp', stop_filter=lambda p: not self.enabled)
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
