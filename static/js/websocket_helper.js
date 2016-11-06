@@ -43,7 +43,7 @@
       notify(connectHandlers);
     });
 
-    socket.on("message", function(data) {
+    socket.on("custom_message", function(data) {
       notify(messageHandlers, JSON.parse(data));
     });
 

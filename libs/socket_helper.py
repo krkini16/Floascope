@@ -64,7 +64,7 @@ def send_message(messageData):
     """
     Send the given python dictionary to all clients.
     """
-    sio.emit("message", json.dumps(messageData))
+    sio.emit("custom_message", json.dumps(messageData))
 
 @sio.on("connect", namespace="/")
 def socket_connect(sid, environ):
