@@ -168,10 +168,10 @@
     var graph_data = {};
     var iv = setInterval( function() {
       for (i in Object.keys(graph_data)) {
-        var timestamp = Object.keys(graph_data)[i];
-        graph.series.addData(graph_data[timestamp], timestamp/1000); // second granularity, for smoothness
+        var timestamp_s = Object.keys(graph_data)[i];
+        graph.series.addData(graph_data[timestamp_s], timestamp_s); // second granularity, for smoothness
       }
-      graph.render();
+      if (Object.keys(graph_data).length > 0) graph.render();
       graph_data = {};
     }, tv );
 
@@ -180,11 +180,11 @@
       for (var i in Object.keys(data)) {
         var source_ip = Object.keys(data)[i];
         var obj = data[source_ip];
-        var timestamp = obj["time_stamp"];
-        var throughput = obj["num_packets"]/obj["interval"]*1000; // throughput in pkts/s
-        if (!(timestamp in graph_data)) graph_data[timestamp] = {};
-        if (!(source_ip in graph_data[timestamp])) graph_data[timestamp][source_ip] = 0;
-        graph_data[timestamp][source_ip] = graph_data[timestamp][source_ip] + throughput;
+        var timestamp_s = obj["time_stamp"]/1000;
+        var throughput = obj["num_packets"]/obj["interval"]*1000; // throughput in #packets/ms
+        if (!(timestamp_s in graph_data)) graph_data[timestamp_s] = {};
+        if (!(source_ip in graph_data[timestamp_s])) graph_data[timestamp_s][source_ip] = 0;
+        graph_data[timestamp_s][source_ip] = graph_data[timestamp_s][source_ip] + throughput;
 
       }
     }], [function() {
