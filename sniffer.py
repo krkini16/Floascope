@@ -1,16 +1,24 @@
 from scapy.all import *
 import time
-from libs.socket_helper import send_message
 
 class Sniffer:
-    def __init__(self, interval=1000):
+    def __init__(self, socketio, interval=1000):
+        self.socketio = socketio
         self.sources = {}
         self.interval = interval
-        self.start_time = None      
+        self.start_time = None
+        self.enabled = True
+
+    def stop(self):
+        self.enabled = False
 
     def run(self):
         print self.start_time
-        sniff(prn=self._process_packet)
+        print("running sniffer")
+
+        #Reset enabled flag
+        self.enabled = True
+        sniff(prn=self._process_packet, filter='tcp')
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
@@ -20,19 +28,18 @@ class Sniffer:
         #Note: this is being sent purely based off of interval. No persistant memory.
         if current_time - self.start_time > self.interval:
             self.start_time = current_time
-            send_message(self.sources)
+            self.socketio.emit("custom_message", self.sources)
             self.sources = {}
 
-        try:
-            source_ip = packet[0][IP].src
-            dest_pid = "TBD"
-            if 'src' in self.sources.keys():
-                self.sources[source_ip][num_packets] += 1
-            else:
-                self.sources[source_ip] = {"time_stamp" : self.start_time,
-                                            "dest_pid"  : dest_pid,
-                                            "num_packets": 1,
-                                            "interval" : self.interval}
-        except:
-            pass
-            #print("not IP packet?")
+        if IP not in packet[0]:
+            return
+        source_ip = packet[0][IP].src
+        dest_pid = "TBD"
+        if source_ip in self.sources.keys():
+            self.sources[source_ip]["num_packets"] += 1
+        else:
+            self.sources[source_ip] = {"time_stamp" : self.start_time,
+                                        "dest_pid"  : dest_pid,
+                                        "dest_port" : packet[0][IP].dport,
+                                        "num_packets": 1,
+                                        "interval" : self.interval}
