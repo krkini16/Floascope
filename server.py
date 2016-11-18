@@ -4,6 +4,7 @@ eventlet.monkey_patch()
 from flask import render_template
 from sniffer import Sniffer
 from flask_socketio import SocketIO, emit
+import argparse
 
 PORT = 8000
 app = Flask(__name__)
@@ -38,8 +39,9 @@ def static_proxy(path):
 def test_connect():
     print("Got a connection")
     global thread
+    global pcap_file
     if thread is None:
-        thread = socketio.start_background_task(target=lambda: Sniffer(socketio).run())
+        thread = socketio.start_background_task(target=lambda: Sniffer(socketio, pcap_file=pcap_file).run())
 
 @socketio.on('disconnect', namespace='/')
 def test_disconnect():
@@ -50,4 +52,9 @@ def handle_my_custom_event(json):
     print('received json: ' + str(json))
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Run Floascope.')
+    parser.add_argument('--pcap', help='Read data from .pcap file.')
+    args = parser.parse_args()
+    global pcap_file
+    pcap_file = args.pcap
     socketio.run(app, port=PORT)
