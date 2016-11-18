@@ -2,7 +2,8 @@ from scapy.all import *
 import time
 
 class Sniffer:
-    def __init__(self, socketio, interval=1000):
+    def __init__(self, socketio, interval=1000, pcap_file=None):
+        self.pcap_file = pcap_file
         self.socketio = socketio
         self.sources = {}
         self.interval = interval
@@ -18,7 +19,10 @@ class Sniffer:
 
         #Reset enabled flag
         self.enabled = True
-        sniff(prn=self._process_packet, filter='tcp')
+        if self.pcap_file is None:
+            sniff(prn=self._process_packet, filter='tcp')
+        else:
+            sniff(prn=self._process_packet, filter='tcp', offline=self.pcap_file)
 
     def _process_packet(self, packet):
         current_time = time.time() * 1000
@@ -38,8 +42,13 @@ class Sniffer:
         if source_ip in self.sources.keys():
             self.sources[source_ip]["num_packets"] += 1
         else:
+            dport = -1
+            try:
+                dport = packet[0][IP].dport
+            except:
+                pass
             self.sources[source_ip] = {"time_stamp" : self.start_time,
                                         "dest_pid"  : dest_pid,
-                                        "dest_port" : packet[0][IP].dport,
+                                        "dest_port" : dport,
                                         "num_packets": 1,
                                         "interval" : self.interval}
